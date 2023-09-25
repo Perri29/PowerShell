@@ -1,0 +1,31 @@
+# Script moves all files into subfolders by date
+# Naming the new subfolders by date
+
+# MUST CHANGE SOURCE DIRECTORY
+
+
+# Set the source directory path
+$sourceDirectory = "C:\Users\perri\Pictures\Misc"
+
+# Get all files recursively from the source directory
+$files = Get-ChildItem -Path $sourceDirectory -File -Recurse
+
+# Iterate through each file and organize them by month and year
+foreach ($file in $files) {
+    # Get the creation date of the file
+    $date = $file.CreationTime
+
+    # Create a new folder with the format "YYYY-MM" (e.g., "2023-09")
+    $newFolder = Join-Path -Path $sourceDirectory -ChildPath ($date.Year.ToString("D4") + "-" + $date.Month.ToString("D2"))
+
+    # If the folder doesn't exist, create it
+    if (-not (Test-Path -Path $newFolder)) {
+        New-Item -Path $newFolder -ItemType Directory
+    }
+
+    # Move the file to the new folder
+    $newFilePath = Join-Path -Path $newFolder -ChildPath $file.Name
+    Move-Item -Path $file.FullName -Destination $newFilePath
+}
+
+Write-Host "Files have been organized."
