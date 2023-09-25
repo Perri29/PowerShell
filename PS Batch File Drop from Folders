@@ -1,0 +1,20 @@
+# Script moves all files from subfolders to root directory
+# Deletes emptied folders
+
+# MUST CHANGE SOURCE DIRECTORY
+
+
+# Define the source directory
+$sourceDirectory = "C:\Users\perri\Pictures\Misc"
+
+# Get all files recursively in the source directory
+$files = Get-ChildItem -Path $sourceDirectory -File -Recurse
+
+# Loop through each file and move it to the root directory (overwrite if duplicates exist)
+foreach ($file in $files) {
+    $destinationPath = Join-Path -Path $sourceDirectory -ChildPath $file.Name
+    Move-Item -Path $file.FullName -Destination $destinationPath -Force
+}
+
+# Remove empty subdirectories
+Get-ChildItem -Path $sourceDirectory -Directory -Recurse | Where-Object { $_.GetFileSystemInfos().Count -eq 0 } | Remove-Item -Force -Recurse
